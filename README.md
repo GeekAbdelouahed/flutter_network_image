@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!-- 
 This README describes the package. If you publish this package to pub.dev,
 this README's contents appear on the landing page for your package.
@@ -38,6 +37,3 @@ const like = 'sample';
 TODO: Tell users more about the package: where to find more information, how to 
 contribute to the package, how to file issues, what response they can expect 
 from the package authors, and more.
-=======
-# flutter_network_image
->>>>>>> a3df93279c456718784b731dd1dafc0a1be0b488
