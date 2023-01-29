@@ -1,2 +1,3 @@
-export 'base_client.dart';
-export 'client_io.dart' if (dart.library.html) 'client_web.dart';
+export 'network_image_client.dart';
+export 'network_image_client_io.dart'
+    if (dart.library.html) 'network_image_client_web.dart';

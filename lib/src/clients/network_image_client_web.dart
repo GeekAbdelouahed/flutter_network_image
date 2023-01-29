@@ -3,13 +3,13 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import '_html.dart' if (dart.library.io) 'dart:io' as html;
-import 'base_client.dart';
+import 'network_image_client.dart';
 
-class HttpClient implements BaseHttpClient {
+class NetworkImageClient implements BaseNetworkImageClient {
   @override
   Future<Uint8List> load(
     String url, {
-    Map<String, String> headers = const {},
+    Map<String, String>? headers,
   }) async {
     final Completer<html.HttpRequest> completer = Completer<html.HttpRequest>();
     final html.HttpRequest request = html.HttpRequest();
@@ -17,7 +17,7 @@ class HttpClient implements BaseHttpClient {
     request.open('GET', url, async: true);
     request.responseType = 'arraybuffer';
 
-    headers.forEach((String header, String value) {
+    headers?.forEach((String header, String value) {
       request.setRequestHeader(header, value);
     });
 
@@ -30,7 +30,6 @@ class HttpClient implements BaseHttpClient {
       final bool success =
           accepted || fileUri || notModified || unknownRedirect;
 
-      log('event: $event');
       if (success) {
         completer.complete(request);
       } else {

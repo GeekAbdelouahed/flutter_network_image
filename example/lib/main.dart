@@ -13,7 +13,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _counter = 0;
+  final int _maxCounter = 10;
+  int _counter = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +30,10 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Image(
             image: NetworkImageProvider(
-              'http://localhost/img/gus.png',
+              'http://192.168.0.139/img/gus.png',
               retryWhen: () {
                 _counter++;
-                return _counter < 15;
+                return _counter <= _maxCounter;
               },
             ),
             height: 150,
