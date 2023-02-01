@@ -14,7 +14,7 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     this.scale = 1,
     this.retryAfter = const Duration(seconds: 1),
     this.retryWhen,
-    this.headers = const {},
+    this.headers,
     BaseNetworkImageClient? httpClient,
   }) : _httpClient = httpClient ?? NetworkImageClient();
 
@@ -22,7 +22,7 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   final double scale;
   final Duration retryAfter;
   final RetryWhen? retryWhen;
-  final Map<String, String> headers;
+  final Map<String, String>? headers;
 
   final BaseNetworkImageClient _httpClient;
 
@@ -33,7 +33,9 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
 
   @override
   ImageStreamCompleter loadBuffer(
-      NetworkImageProvider key, DecoderBufferCallback decode) {
+    NetworkImageProvider key,
+    DecoderBufferCallback decode,
+  ) {
     return OneFrameImageStreamCompleter(
       _loadAndRetry(key, decode),
       informationCollector: () => <DiagnosticsNode>[
