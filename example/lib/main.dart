@@ -30,14 +30,13 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Image(
             image: NetworkImageProvider(
-              'http://192.168.0.139/img/gus.png',
+              'https://flutter-with-dart.000webhostapp.com/dart.jpeg',
               retryWhen: () {
                 _counter++;
                 return _counter <= _maxCounter;
               },
             ),
-            height: 150,
-            width: 150,
+            width: 300,
           ),
         ),
       ),

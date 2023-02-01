@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
@@ -33,7 +32,8 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   }
 
   @override
-  ImageStreamCompleter load(NetworkImageProvider key, DecoderCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      NetworkImageProvider key, DecoderBufferCallback decode) {
     return OneFrameImageStreamCompleter(
       _loadAndRetry(key, decode),
       informationCollector: () => <DiagnosticsNode>[
@@ -45,7 +45,7 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
 
   Future<ImageInfo> _loadAndRetry(
     NetworkImageProvider provider,
-    DecoderCallback decode,
+    DecoderBufferCallback decode,
   ) async {
     try {
       final Uint8List bytes = await _httpClient.load(url, headers: headers);
