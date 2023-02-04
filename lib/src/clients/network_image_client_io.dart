@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -15,6 +16,7 @@ class NetworkImageClient implements BaseNetworkImageClient {
   Future<Uint8List> load(
     String url, {
     Map<String, String>? headers,
+    required StreamController<ImageChunkEvent> chunkEvents,
   }) async {
     try {
       final Uri resolved = Uri.base.resolve(url);
@@ -35,7 +37,17 @@ class NetworkImageClient implements BaseNetworkImageClient {
         );
       }
 
-      return foundation.consolidateHttpClientResponseBytes(response);
+      return foundation.consolidateHttpClientResponseBytes(
+        response,
+        onBytesReceived: (int cumulative, int? total) async {
+          chunkEvents.add(
+            ImageChunkEvent(
+              cumulativeBytesLoaded: cumulative,
+              expectedTotalBytes: total,
+            ),
+          );
+        },
+      );
     } catch (e) {
       rethrow;
     }

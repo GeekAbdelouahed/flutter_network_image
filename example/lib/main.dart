@@ -30,12 +30,22 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Image(
             image: NetworkImageProvider(
-              'https://flutter-with-dart.000webhostapp.com/dart.jpeg',
+              'https://flutter-with-dart.000webhostapp.com/night-sky.png',
               retryWhen: () {
                 _counter++;
                 return _counter <= _maxCounter;
               },
             ),
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              }
+
+              return CircularProgressIndicator(
+                value: loadingProgress.cumulativeBytesLoaded /
+                    (loadingProgress.expectedTotalBytes ?? 1),
+              );
+            },
             width: 300,
           ),
         ),
