@@ -1,3 +1,7 @@
+## 0.0.2
+
+* LoadingBuilder image.
+
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Initial release.
