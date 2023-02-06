@@ -1,3 +1,6 @@
+## 0.0.2+1
+* Documentation
+
 ## 0.0.2
 
 * LoadingBuilder image.
