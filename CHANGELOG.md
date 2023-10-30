@@ -1,3 +1,6 @@
+## 0.0.4
+* Load image using flutter cache manager
+
 ## 0.0.3
 * Update retryWhen callback
 
