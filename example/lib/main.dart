@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
           child: Image(
             image: NetworkImageProvider(
               'https://flutter-with-dart.000webhostapp.com/night-sky.png',
-              retryWhen: () {
+              retryWhen: (totalDuration) {
                 _counter++;
                 return _counter <= _maxCounter;
               },

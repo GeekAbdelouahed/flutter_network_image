@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 
 import 'clients/clients.dart';
 
-typedef RetryWhen = bool Function();
+typedef RetryWhen = bool Function(Duration totalDuration);
 
 class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   NetworkImageProvider(
@@ -26,15 +26,17 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
 
   final BaseNetworkImageClient _httpClient;
 
+  Duration _totalDuration = Duration.zero;
+
   @override
   Future<NetworkImageProvider> obtainKey(ImageConfiguration configuration) {
     return SynchronousFuture<NetworkImageProvider>(this);
   }
 
   @override
-  ImageStreamCompleter loadBuffer(
+  ImageStreamCompleter loadImage(
     NetworkImageProvider key,
-    DecoderBufferCallback decode,
+    ImageDecoderCallback decode,
   ) {
     final StreamController<ImageChunkEvent> chunkEvents =
         StreamController<ImageChunkEvent>();
@@ -62,10 +64,13 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
       );
       return ui.instantiateImageCodec(bytes);
     } catch (e) {
-      if (retryWhen?.call() ?? false) {
+      if (retryWhen?.call(_totalDuration) ?? false) {
         return Future.delayed(
           retryAfter,
-          () => _loadAndRetry(provider, chunkEvents),
+          () {
+            _totalDuration += retryAfter;
+            return _loadAndRetry(provider, chunkEvents);
+          },
         );
       } else {
         rethrow;
