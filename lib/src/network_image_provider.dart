@@ -5,9 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import 'clients/base_client.dart';
-import 'clients/client_io.dart' if (dart.library.html) 'http_client_web.dart'
-    as client;
+import 'clients/clients.dart';
 
 typedef RetryWhen = bool Function();
 
@@ -17,13 +15,15 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     this.scale = 1,
     this.retryAfter = const Duration(seconds: 1),
     this.retryWhen,
+    this.headers = const {},
     BaseHttpClient? httpClient,
-  }) : _httpClient = httpClient ?? client.HttpClient();
+  }) : _httpClient = httpClient ?? HttpClient();
 
   final String url;
   final double scale;
   final Duration retryAfter;
   final RetryWhen? retryWhen;
+  final Map<String, String> headers;
 
   final BaseHttpClient _httpClient;
 
@@ -48,7 +48,7 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     DecoderCallback decode,
   ) async {
     try {
-      final Uint8List bytes = await _httpClient.load(url);
+      final Uint8List bytes = await _httpClient.load(url, headers: headers);
       final codec = await ui.instantiateImageCodec(bytes);
       final frameInfo = await codec.getNextFrame();
       return ImageInfo(
