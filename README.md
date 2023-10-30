@@ -10,7 +10,7 @@ Example:
 Image(
   image: NetworkImageProvider(
   'https://image.com/avatar.png',
-  retryWhen: () => true,
+  retryWhen: (Duration totalDuration) => true,
 ),
 ```
 
