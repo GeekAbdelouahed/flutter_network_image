@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
               'http://localhost/img/gus.png',
               retryWhen: () {
                 _counter++;
-                return _counter < 10;
+                return _counter < 15;
               },
             ),
             height: 150,
