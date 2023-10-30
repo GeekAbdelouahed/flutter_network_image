@@ -7,6 +7,8 @@ import '_html.dart' if (dart.library.io) 'dart:io' as html;
 import 'network_image_client.dart';
 
 class NetworkImageClient implements BaseNetworkImageClient {
+  const NetworkImageClient();
+
   @override
   Future<Uint8List> load(
     String url, {

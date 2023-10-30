@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/widgets.dart';
 
 abstract class BaseNetworkImageClient {
+  const BaseNetworkImageClient();
   Future<Uint8List> load(
     String url, {
     Map<String, String>? headers,

@@ -9,14 +9,14 @@ import 'clients/clients.dart';
 typedef RetryWhen = bool Function(Duration totalDuration);
 
 class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
-  NetworkImageProvider(
+  const NetworkImageProvider(
     this.url, {
     this.scale = 1,
     this.retryAfter = const Duration(seconds: 1),
     this.retryWhen,
     this.headers,
-    BaseNetworkImageClient? httpClient,
-  }) : _httpClient = httpClient ?? NetworkImageClient();
+    this.httpClient = const NetworkImageClient(),
+  });
 
   final String url;
   final double scale;
@@ -24,9 +24,7 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   final RetryWhen? retryWhen;
   final Map<String, String>? headers;
 
-  final BaseNetworkImageClient _httpClient;
-
-  Duration _totalDuration = Duration.zero;
+  final BaseNetworkImageClient httpClient;
 
   @override
   Future<NetworkImageProvider> obtainKey(ImageConfiguration configuration) {
@@ -40,11 +38,11 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   ) {
     final StreamController<ImageChunkEvent> chunkEvents =
         StreamController<ImageChunkEvent>();
-
     return MultiFrameImageStreamCompleter(
-      codec: _loadAndRetry(key, chunkEvents),
+      codec: _loadAndRetry(key, chunkEvents, decode),
       chunkEvents: chunkEvents.stream,
-      scale: scale,
+      scale: key.scale,
+      debugLabel: key.url,
       informationCollector: () => <DiagnosticsNode>[
         DiagnosticsProperty<NetworkImageProvider>('Image provider', this),
         DiagnosticsProperty<NetworkImageProvider>('Image key', key),
@@ -53,28 +51,53 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   }
 
   Future<ui.Codec> _loadAndRetry(
-    NetworkImageProvider provider,
+    NetworkImageProvider key,
     StreamController<ImageChunkEvent> chunkEvents,
-  ) async {
+    ImageDecoderCallback decode, {
+    Duration totalDuration = Duration.zero,
+  }) async {
     try {
-      final Uint8List bytes = await _httpClient.load(
+      final Uint8List bytes = await httpClient.load(
         url,
         headers: headers,
         chunkEvents: chunkEvents,
       );
-      return ui.instantiateImageCodec(bytes);
+      final ui.ImmutableBuffer buffer =
+          await ui.ImmutableBuffer.fromUint8List(bytes);
+      return decode(buffer);
     } catch (e) {
-      if (retryWhen?.call(_totalDuration) ?? false) {
+      if (retryWhen?.call(totalDuration) ?? false) {
         return Future.delayed(
           retryAfter,
-          () {
-            _totalDuration += retryAfter;
-            return _loadAndRetry(provider, chunkEvents);
-          },
+          () => _loadAndRetry(
+            key,
+            chunkEvents,
+            decode,
+            totalDuration: totalDuration + retryAfter,
+          ),
         );
       } else {
         rethrow;
       }
+    } finally {
+      chunkEvents.close();
     }
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is NetworkImageProvider &&
+        other.url == url &&
+        other.scale == scale;
+  }
+
+  @override
+  int get hashCode => Object.hash(url, scale);
+
+  @override
+  String toString() =>
+      '${objectRuntimeType(this, 'NetworkImageProvider')}("$url", scale: $scale)';
 }
