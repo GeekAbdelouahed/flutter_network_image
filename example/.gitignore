@@ -1,3 +1,5 @@
+.fvm/
+
 # Miscellaneous
 *.class
 *.log
