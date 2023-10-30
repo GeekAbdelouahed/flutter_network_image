@@ -1,3 +1,6 @@
+## 0.0.3
+* Update retryWhen callback
+
 ## 0.0.2+1
 * Documentation
 
