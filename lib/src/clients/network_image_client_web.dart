@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:typed_data';
+
+import 'package:flutter/widgets.dart';
 
 import '_html.dart' if (dart.library.io) 'dart:io' as html;
 import 'network_image_client.dart';
@@ -10,6 +11,7 @@ class NetworkImageClient implements BaseNetworkImageClient {
   Future<Uint8List> load(
     String url, {
     Map<String, String>? headers,
+    required StreamController<ImageChunkEvent> chunkEvents,
   }) async {
     final Completer<html.HttpRequest> completer = Completer<html.HttpRequest>();
     final html.HttpRequest request = html.HttpRequest();
@@ -38,13 +40,22 @@ class NetworkImageClient implements BaseNetworkImageClient {
       }
     });
 
+    request.onProgress.listen(
+      (event) {
+        chunkEvents.add(
+          ImageChunkEvent(
+            cumulativeBytesLoaded: event.loaded ?? 0,
+            expectedTotalBytes: event.total,
+          ),
+        );
+      },
+    );
+
     request.onError.listen(completer.completeError);
 
     request.send();
 
     await completer.future;
-
-    log('response: ${request.response as ByteBuffer}');
     return (request.response as ByteBuffer).asUint8List();
   }
 }

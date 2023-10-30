@@ -36,8 +36,13 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     NetworkImageProvider key,
     DecoderBufferCallback decode,
   ) {
-    return OneFrameImageStreamCompleter(
-      _loadAndRetry(key, decode),
+    final StreamController<ImageChunkEvent> chunkEvents =
+        StreamController<ImageChunkEvent>();
+
+    return MultiFrameImageStreamCompleter(
+      codec: _loadAndRetry(key, chunkEvents),
+      chunkEvents: chunkEvents.stream,
+      scale: scale,
       informationCollector: () => <DiagnosticsNode>[
         DiagnosticsProperty<NetworkImageProvider>('Image provider', this),
         DiagnosticsProperty<NetworkImageProvider>('Image key', key),
@@ -45,24 +50,22 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     );
   }
 
-  Future<ImageInfo> _loadAndRetry(
+  Future<ui.Codec> _loadAndRetry(
     NetworkImageProvider provider,
-    DecoderBufferCallback decode,
+    StreamController<ImageChunkEvent> chunkEvents,
   ) async {
     try {
-      final Uint8List bytes = await _httpClient.load(url, headers: headers);
-      final codec = await ui.instantiateImageCodec(bytes);
-      final frameInfo = await codec.getNextFrame();
-      return ImageInfo(
-        image: frameInfo.image,
-        scale: scale,
-        debugLabel: url,
+      final Uint8List bytes = await _httpClient.load(
+        url,
+        headers: headers,
+        chunkEvents: chunkEvents,
       );
+      return ui.instantiateImageCodec(bytes);
     } catch (e) {
       if (retryWhen?.call() ?? false) {
         return Future.delayed(
           retryAfter,
-          () => _loadAndRetry(provider, decode),
+          () => _loadAndRetry(provider, chunkEvents),
         );
       } else {
         rethrow;
