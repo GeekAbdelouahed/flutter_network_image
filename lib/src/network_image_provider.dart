@@ -16,8 +16,8 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     this.retryAfter = const Duration(seconds: 1),
     this.retryWhen,
     this.headers = const {},
-    BaseHttpClient? httpClient,
-  }) : _httpClient = httpClient ?? HttpClient();
+    BaseNetworkImageClient? httpClient,
+  }) : _httpClient = httpClient ?? NetworkImageClient();
 
   final String url;
   final double scale;
@@ -25,7 +25,7 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   final RetryWhen? retryWhen;
   final Map<String, String> headers;
 
-  final BaseHttpClient _httpClient;
+  final BaseNetworkImageClient _httpClient;
 
   @override
   Future<NetworkImageProvider> obtainKey(ImageConfiguration configuration) {
