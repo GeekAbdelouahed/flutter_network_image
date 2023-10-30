@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io' as io;
 import 'dart:typed_data';
 
@@ -23,7 +22,7 @@ class HttpClient implements BaseHttpClient {
       });
 
       final io.HttpClientResponse response = await request.close();
-      log('response: $response');
+
       if (response.statusCode != io.HttpStatus.ok) {
         throw NetworkImageLoadException(
           statusCode: response.statusCode,
