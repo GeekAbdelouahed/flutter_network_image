@@ -1,5 +1,5 @@
 name: flutter_network_image
-description: A new Flutter package project.
+description: Flutter netwrok image provider with retry option.
 version: 0.0.1
 homepage:
 
