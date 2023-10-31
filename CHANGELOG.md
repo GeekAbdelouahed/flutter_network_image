@@ -1,3 +1,6 @@
+## 0.0.6
+* Update README
+
 ## 0.0.5
 * Adds attempt data
 * Update example
