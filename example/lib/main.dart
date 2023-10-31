@@ -13,9 +13,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final int _maxCounter = 10;
-  int _counter = 1;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,11 +27,8 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Image(
             image: NetworkImageProvider(
-              'https://flutter-with-dart.000webhostapp.com/night-sky.png',
-              retryWhen: (totalDuration) {
-                _counter++;
-                return _counter <= _maxCounter;
-              },
+              'https://example.com/image.png',
+              retryWhen: (Attempt attempt) => attempt.counter < 10,
             ),
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) {

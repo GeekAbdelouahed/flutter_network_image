@@ -3,10 +3,11 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_network_image/src/attempt.dart';
 
 import 'clients/clients.dart';
 
-typedef RetryWhen = bool Function(Duration totalDuration);
+typedef RetryWhen = bool Function(Attempt attempt);
 
 class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   const NetworkImageProvider(
@@ -38,8 +39,14 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   ) {
     final StreamController<ImageChunkEvent> chunkEvents =
         StreamController<ImageChunkEvent>();
+
     return MultiFrameImageStreamCompleter(
-      codec: _loadAndRetry(key, chunkEvents, decode),
+      codec: _loadAndRetry(
+        key,
+        chunkEvents,
+        decode,
+        startedAt: DateTime.now(),
+      ),
       chunkEvents: chunkEvents.stream,
       scale: key.scale,
       debugLabel: key.url,
@@ -54,7 +61,8 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     NetworkImageProvider key,
     StreamController<ImageChunkEvent> chunkEvents,
     ImageDecoderCallback decode, {
-    Duration totalDuration = Duration.zero,
+    required DateTime startedAt,
+    int attemptsCounter = 0,
   }) async {
     try {
       final Uint8List bytes = await httpClient.load(
@@ -66,14 +74,20 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
           await ui.ImmutableBuffer.fromUint8List(bytes);
       return decode(buffer);
     } catch (e) {
-      if (retryWhen?.call(totalDuration) ?? false) {
+      final Attempt attempt = Attempt(
+        totalDuration: DateTime.now().difference(startedAt),
+        counter: attemptsCounter,
+      );
+      final bool canRetry = retryWhen?.call(attempt) ?? false;
+      if (canRetry) {
         return Future.delayed(
           retryAfter,
           () => _loadAndRetry(
             key,
             chunkEvents,
             decode,
-            totalDuration: totalDuration + retryAfter,
+            startedAt: startedAt,
+            attemptsCounter: attemptsCounter + 1,
           ),
         );
       } else {
