@@ -1,6 +1,6 @@
 name: flutter_network_image
 description: ImageProvider for flutter with retry mechanism.
-version: 0.0.6
+version: 0.0.7
 homepage: https://github.com/GeekAbdelouahed/flutter_network_image
 
 environment:
