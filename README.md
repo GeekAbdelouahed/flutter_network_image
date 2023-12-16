@@ -2,7 +2,7 @@
 
 ## NetworkImageProvider
 
-Use `NetworkImageProvider` in `Image` to load images from the network with a retry mechanism.
+`NetworkImageProvider` is a flutter package that provides a robust ImageProvider that automatically retries failed network image loads, ensuring smooth image loading on mobile and web platforms.
 
 Example:
 
