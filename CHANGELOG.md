@@ -1,3 +1,6 @@
+## 0.0.7+1
+* Fix typo
+
 ## 0.0.7
 * Adds documentation
 * Update Example

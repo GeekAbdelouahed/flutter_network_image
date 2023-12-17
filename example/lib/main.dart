@@ -11,13 +11,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter network provider demo',
+      title: 'Flutter network image demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter network provider demo'),
+          title: const Text('Flutter network image demo'),
         ),
         body: Center(
           child: Image(
