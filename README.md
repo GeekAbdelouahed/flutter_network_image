@@ -1,8 +1,8 @@
 # ImageProvider for flutter with retry mechanism
 
-## NetworkImageProvider
+## flutter_network_image
 
-`NetworkImageProvider` is a flutter package that provides a robust ImageProvider that automatically retries failed network image loads, ensuring smooth image loading on mobile and web platforms.
+flutter_network_image is a flutter package that provides a robust ImageProvider that automatically retries failed network image loads, ensuring smooth image loading on mobile and web platforms.
 
 Example:
 
