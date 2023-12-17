@@ -5,42 +5,39 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter network provider demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter Demo'),
+          title: const Text('Flutter network provider demo'),
         ),
         body: Center(
           child: Image(
+            width: 300,
+            height: 300,
+            fit: BoxFit.cover,
             image: NetworkImageProvider(
               'https://example.com/image.png',
               retryWhen: (Attempt attempt) => attempt.counter < 10,
             ),
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) {
+            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+              if (frame != null) {
                 return child;
               }
 
-              return CircularProgressIndicator(
-                value: loadingProgress.cumulativeBytesLoaded /
-                    (loadingProgress.expectedTotalBytes ?? 1),
-              );
+              return const CircularProgressIndicator();
             },
-            width: 300,
+            errorBuilder: (context, error, stackTrace) {
+              return const Text('Loading image failed!');
+            },
           ),
         ),
       ),

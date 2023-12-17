@@ -19,12 +19,22 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     this.httpClient = const NetworkImageClient(),
   });
 
+  /// The URL of the image to be loaded.
   final String url;
+
+  /// The scale factor to be applied to the image. A value of 1.0 represents the original size.
   final double scale;
+
+  /// The duration to wait before retrying a failed image load.
   final Duration retryAfter;
+
+  /// A callback function that determines whether to retry after a failed.
   final RetryWhen? retryWhen;
+
+  /// Optional headers to be sent with the HTTP request.
   final Map<String, String>? headers;
 
+  /// Optional custom HTTP client. If not provided, the default client is used.
   final BaseNetworkImageClient httpClient;
 
   @override

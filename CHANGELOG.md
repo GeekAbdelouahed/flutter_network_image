@@ -1,3 +1,10 @@
+## 0.0.6+1
+* Adds documentation
+* Update Example
+
+## 0.0.6+1
+* Update README
+
 ## 0.0.6
 * Update README
 
