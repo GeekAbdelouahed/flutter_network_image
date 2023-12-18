@@ -72,7 +72,7 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     StreamController<ImageChunkEvent> chunkEvents,
     ImageDecoderCallback decode, {
     required DateTime startedAt,
-    int attemptsCounter = 0,
+    int attemptsCounter = 1,
   }) async {
     try {
       final Uint8List bytes = await httpClient.load(
@@ -80,16 +80,16 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
         headers: headers,
         chunkEvents: chunkEvents,
       );
-      final ui.ImmutableBuffer buffer =
-          await ui.ImmutableBuffer.fromUint8List(bytes);
+      final ui.ImmutableBuffer buffer = await ui.ImmutableBuffer.fromUint8List(
+        bytes,
+      );
       return decode(buffer);
     } catch (e) {
       final Attempt attempt = Attempt(
         totalDuration: DateTime.now().difference(startedAt),
         counter: attemptsCounter,
       );
-      final bool canRetry = retryWhen?.call(attempt) ?? false;
-      if (canRetry) {
+      if (retryWhen?.call(attempt) == true) {
         return Future.delayed(
           retryAfter,
           () => _loadAndRetry(
