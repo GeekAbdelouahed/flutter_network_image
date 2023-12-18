@@ -1,6 +1,6 @@
 name: flutter_network_image
 description: flutter package that provides an ImageProvider automatically retries failed network image loads, ensuring smooth image loading on mobile and web platforms.
-version: 0.0.7+1
+version: 0.0.8
 homepage: https://github.com/GeekAbdelouahed/flutter_network_image
 
 environment:

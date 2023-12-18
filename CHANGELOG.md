@@ -1,3 +1,6 @@
+## 0.0.8
+* Fix attempt counter
+
 ## 0.0.7+1
 * Fix typo
 
