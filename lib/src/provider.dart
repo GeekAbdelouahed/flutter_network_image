@@ -4,8 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_network_image/src/attempt.dart';
-
-import 'clients/clients.dart';
+import 'package:flutter_network_image/src/client.dart';
 
 typedef RetryWhen = bool Function(Attempt attempt);
 
@@ -16,6 +15,8 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
     this.retryAfter = const Duration(seconds: 1),
     this.retryWhen,
     this.headers,
+    this.maxWidth,
+    this.maxHeight,
     this.httpClient = const NetworkImageClient(),
   });
 
@@ -28,7 +29,7 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
   /// The duration to wait before retrying a failed image load.
   final Duration retryAfter;
 
-  /// A callback function that determines whether to retry after a failed.
+  /// A callback function that determines whether to retry after a failure.
   final RetryWhen? retryWhen;
 
   /// Optional headers to be sent with the HTTP request.
@@ -36,6 +37,9 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
 
   /// Optional custom HTTP client. If not provided, the default client is used.
   final BaseNetworkImageClient httpClient;
+
+  final int? maxWidth;
+  final int? maxHeight;
 
   @override
   Future<NetworkImageProvider> obtainKey(ImageConfiguration configuration) {
@@ -78,6 +82,8 @@ class NetworkImageProvider extends ImageProvider<NetworkImageProvider> {
       final Uint8List bytes = await httpClient.load(
         url,
         headers: headers,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
         chunkEvents: chunkEvents,
       );
       final ui.ImmutableBuffer buffer = await ui.ImmutableBuffer.fromUint8List(

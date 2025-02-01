@@ -4,7 +4,16 @@ import 'dart:typed_data';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-import 'network_image_client.dart';
+abstract class BaseNetworkImageClient {
+  const BaseNetworkImageClient();
+  Future<Uint8List> load(
+    String url, {
+    Map<String, String>? headers,
+    int? maxWidth,
+    int? maxHeight,
+    required StreamController<ImageChunkEvent> chunkEvents,
+  });
+}
 
 class NetworkImageClient implements BaseNetworkImageClient {
   const NetworkImageClient();
@@ -13,6 +22,8 @@ class NetworkImageClient implements BaseNetworkImageClient {
   Future<Uint8List> load(
     String url, {
     Map<String, String>? headers,
+    int? maxWidth,
+    int? maxHeight,
     required StreamController<ImageChunkEvent> chunkEvents,
   }) async {
     try {
@@ -21,6 +32,8 @@ class NetworkImageClient implements BaseNetworkImageClient {
         url,
         key: url,
         headers: headers,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
         withProgress: true,
       );
 
@@ -32,8 +45,7 @@ class NetworkImageClient implements BaseNetworkImageClient {
               expectedTotalBytes: response.totalSize,
             ),
           );
-        }
-        if (response is FileInfo) {
+        } else if (response is FileInfo) {
           return response.file.readAsBytes();
         }
       }

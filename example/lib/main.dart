@@ -11,13 +11,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter network image demo',
+      title: 'Flutter network image example',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter network image demo'),
+          title: const Text('Flutter network image example'),
         ),
         body: Center(
           child: Image(
@@ -28,15 +28,24 @@ class MyApp extends StatelessWidget {
               'https://example.com/image.png',
               retryWhen: (Attempt attempt) => attempt.counter < 10,
             ),
-            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-              if (frame != null) {
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
                 return child;
               }
-
-              return const CircularProgressIndicator();
+              final int totalSize = loadingProgress.expectedTotalBytes ??
+                  loadingProgress.cumulativeBytesLoaded;
+              final double progress =
+                  loadingProgress.cumulativeBytesLoaded / totalSize;
+              return CircularProgressIndicator(
+                value: progress,
+              );
             },
             errorBuilder: (context, error, stackTrace) {
-              return const Text('Loading image failed!');
+              return const Icon(
+                Icons.cloud_off,
+                color: Colors.grey,
+                size: 48,
+              );
             },
           ),
         ),
